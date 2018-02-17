@@ -11,7 +11,7 @@ const char* vertexShaderSource =
 "layout (location = 0) in vec3 aPos;\n"
 "void main()\n"
 "{\n"
-"	gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+"              gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
 "}\n\0";
 
 const char* FragmentShaderSource =
@@ -19,7 +19,7 @@ const char* FragmentShaderSource =
 "out vec4 FragColor;\n"
 "void main()\n"
 "{\n"
-"	FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+"              FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
 "}\n\0";
 
 int main()
@@ -28,12 +28,12 @@ int main()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	
+
 	// would need this line to run on a mac
 	//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
 	GLFWwindow* window = glfwCreateWindow(800, 600, "My Window", NULL, NULL);
-	
+
 	if (window == NULL)
 	{
 		std::cout << "Failed to create GLFW window.\n";
@@ -48,7 +48,7 @@ int main()
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
 		std::cout << "Failed to initialize GLAD.\n";
-		
+
 		return -2;
 	}
 
@@ -104,10 +104,26 @@ int main()
 	glfwSetFramebufferSizeCallback(window, FramebufferSizeCallback);
 
 	float vertices[] = {
+		/*-0.5f, -0.5f, 0.0f,
+		0.5f, -0.5f, 0.0f,
+		0.0f,  0.5f, 0.0f,*/
+
+		0.5f,  0.5f, 0.0f,
+		0.5f, -0.5f, 0.0f,
 		-0.5f, -0.5f, 0.0f,
-		 0.5f, -0.5f, 0.0f,
-		 0.0f,  0.5f, 0.0f,
+		-0.5f,  0.5f, 0.0f
 	};
+
+	unsigned int indices[] = {
+		0, 1, 3,
+		1, 2, 3
+	};
+
+	unsigned int ElementBufferObject;
+	glGenBuffers(1, &ElementBufferObject);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferObject);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	unsigned int VertexBufferObject;
 	glGenBuffers(1, &VertexBufferObject);
@@ -140,12 +156,24 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		glUseProgram(shaderProgram);
-		glBindVertexArray(VertexArrayObject);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+
+		// draw all vertexes in the specified array
+		///glBindVertexArray(VertexArrayObject);
+		///glDrawArrays(GL_TRIANGLES, 0, 3);
+
+		// draw the specified buffers to draw multiple objects
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferObject);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+		// draws the object as a wireframe
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferObject);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 		// updates the windows visuals using a double buffer
 		glfwSwapBuffers(window);
-		
+
 		// checks if any inputs have been givven to the window
 		glfwPollEvents();
 	}
