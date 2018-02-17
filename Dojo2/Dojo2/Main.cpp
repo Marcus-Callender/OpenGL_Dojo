@@ -8,18 +8,21 @@ void processInput(GLFWwindow* window);
 
 const char* vertexShaderSource =
 "#version 330 core\n"
-"layout (location = 0) in vec3 aPos;\n"
+"layout (location = 0) in vec3 aPos;\n" // sets the position variable to 0
+"out vec4 vertexColour;" // a specified colour to give to teh tragment shader
 "void main()\n"
 "{\n"
-"              gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+"              gl_Position = vec4(aPos, 1.0);\n" // sets the first 3 elements of gl_Position to the 3 elements in aPos
+"              vertexColour = vec4(0.5, 0.0, 0.0, 1.0);\n" // sets the vertexColour to dark red
 "}\n\0";
 
 const char* FragmentShaderSource =
 "#version 330 core\n"
 "out vec4 FragColor;\n"
+"in vec4 vertexColour;" // an input variable from the vertex shader
 "void main()\n"
 "{\n"
-"              FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+"              FragColor = vertexColour;\n"
 "}\n\0";
 
 int main()
@@ -166,7 +169,7 @@ int main()
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 		// draws the object as a wireframe
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		///glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferObject);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
