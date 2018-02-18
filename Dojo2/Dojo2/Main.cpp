@@ -9,20 +9,21 @@ void processInput(GLFWwindow* window);
 const char* vertexShaderSource =
 "#version 330 core\n"
 "layout (location = 0) in vec3 aPos;\n" // sets the position variable to 0
-"out vec4 vertexColour;" // a specified colour to give to teh tragment shader
+//"out vec4 vertexColour;" // a specified colour to give to teh tragment shader
 "void main()\n"
 "{\n"
-"              gl_Position = vec4(aPos, 1.0);\n" // sets the first 3 elements of gl_Position to the 3 elements in aPos
-"              vertexColour = vec4(0.5, 0.0, 0.0, 1.0);\n" // sets the vertexColour to dark red
+"    gl_Position = vec4(aPos, 1.0);\n" // sets the first 3 elements of gl_Position to the 3 elements in aPos
+//"    vertexColour = vec4(0.5, 0.0, 0.0, 1.0);\n" // sets the vertexColour to dark red
 "}\n\0";
 
 const char* FragmentShaderSource =
 "#version 330 core\n"
 "out vec4 FragColor;\n"
-"in vec4 vertexColour;" // an input variable from the vertex shader
+//"in vec4 vertexColour;" // an input variable from the vertex shader
+"uniform vec4 uniformColor;" // a globaly acsessable variabe
 "void main()\n"
 "{\n"
-"              FragColor = vertexColour;\n"
+"    FragColor = uniformColor;\n"
 "}\n\0";
 
 int main()
@@ -159,6 +160,11 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		glUseProgram(shaderProgram);
+
+		float currentTime = (float)glfwGetTime(); // removes minor typecast warning
+		float greenness = (sin(currentTime) / 2.0f) + 0.5f;
+		int vertexLocation = glGetUniformLocation(shaderProgram, "uniformColor");
+		glUniform4f(vertexLocation, 0.0f, greenness, 0.0f, 1.0f);
 
 		// draw all vertexes in the specified array
 		///glBindVertexArray(VertexArrayObject);
