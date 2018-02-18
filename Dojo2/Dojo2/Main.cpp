@@ -9,21 +9,21 @@ void processInput(GLFWwindow* window);
 const char* vertexShaderSource =
 "#version 330 core\n"
 "layout (location = 0) in vec3 aPos;\n" // sets the position variable to 0
-//"out vec4 vertexColour;" // a specified colour to give to teh tragment shader
+"layout (location = 1) in vec3 aColour;\n"
+"out vec3 ourColour;\n" // output a color to the fragment shader
 "void main()\n"
 "{\n"
 "    gl_Position = vec4(aPos, 1.0);\n" // sets the first 3 elements of gl_Position to the 3 elements in aPos
-//"    vertexColour = vec4(0.5, 0.0, 0.0, 1.0);\n" // sets the vertexColour to dark red
+"	 ourColour = aColour;\n" // set ourColour to the input color we got from the vertex data
 "}\n\0";
 
 const char* FragmentShaderSource =
 "#version 330 core\n"
 "out vec4 FragColor;\n"
-//"in vec4 vertexColour;" // an input variable from the vertex shader
-"uniform vec4 uniformColor;" // a globaly acsessable variabe
+"in vec3 ourColour;" // a globaly acsessable variabe
 "void main()\n"
 "{\n"
-"    FragColor = uniformColor;\n"
+"    FragColor = vec4(ourColour, 1.0f);\n"
 "}\n\0";
 
 int main()
@@ -108,19 +108,19 @@ int main()
 	glfwSetFramebufferSizeCallback(window, FramebufferSizeCallback);
 
 	float vertices[] = {
-		/*-0.5f, -0.5f, 0.0f,
-		0.5f, -0.5f, 0.0f,
-		0.0f,  0.5f, 0.0f,*/
+		-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
+		 0.5f, -0.5f, 0.0f,	0.0f, 1.0f, 0.0f,
+		 0.0f,  0.5f, 0.0f,	0.0f, 0.0f, 1.0f,
 
-		0.5f,  0.5f, 0.0f,
-		0.5f, -0.5f, 0.0f,
-		-0.5f, -0.5f, 0.0f,
-		-0.5f,  0.5f, 0.0f
+		 /*0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
+		 0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
+		-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
+		-0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 0.0f*/
 	};
 
 	unsigned int indices[] = {
-		0, 1, 3,
-		1, 2, 3
+		0, 1, 2,
+		//1, 2, 3
 	};
 
 	unsigned int ElementBufferObject;
@@ -145,8 +145,11 @@ int main()
 
 	// the index of the first vertex to configure, the size of the vertex attribute, the type of data
 	// wheather to normalize the data, the size between the begining of each vertex, the data offset 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
+
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
 
 	// keeps the window open until it should close
 	while (!glfwWindowShouldClose(window))
